@@ -1,0 +1,320 @@
+/* General Page */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fb;
+    color: #222;
+}
+
+
+/* Navigation Bar */
+
+nav {
+    background-color: #111827;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h2 {
+    margin: 0;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    margin: 0;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+
+/* Sections */
+
+section {
+    padding: 50px;
+    margin: 20px auto;
+    max-width: 1000px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+
+/* Headings */
+
+h1 {
+    font-size: 45px;
+}
+
+h2 {
+    color: #2563eb;
+}
+
+
+/* Lists */
+
+li {
+    margin: 10px 0;
+}
+
+
+/* Project */
+
+#projects div {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+
+/* Footer */
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #111827;
+    color: white;
+}
+
+
+/* Home Section */
+
+#home {
+    min-height: 400px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+
+    text-align: center;
+
+    background-color: #eaf2ff;
+}
+
+#home h1 {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+#home h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+#home p {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+
+/* Navigation Links */
+
+nav ul li a:hover {
+    color: #60a5fa;
+}
+
+
+/* Project Link */
+
+#projects a {
+    display: inline-block;
+
+    padding: 10px 20px;
+
+    background-color: #2563eb;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 6px;
+}
+
+#projects a:hover {
+    background-color: #1d4ed8;
+}
+
+
+
+
+/* ============================= */
+/* Wastewater Prediction Section */
+/* ============================= */
+
+#predictionForm {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+#predictionForm label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+#predictionForm input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+#predictionForm input:focus {
+    border-color: #333;
+    outline: none;
+}
+
+#predictionForm button {
+    margin-top: 25px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #333;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#predictionForm button:hover {
+    opacity: 0.85;
+}
+
+#predictionResult {
+    max-width: 700px;
+    margin: 25px auto;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    background: #eef2f3;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+
+/* ============================= */
+/* Prediction History Table */
+/* ============================= */
+
+#predictionTable {
+    width: 95%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+}
+
+#predictionTable th,
+#predictionTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+#predictionTable th {
+    font-weight: bold;
+}
+
+#predictionTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+#predictionTable td:last-child {
+    white-space: nowrap;
+}
+
+
+/* ============================= */
+/* Wastewater Dashboard */
+/* ============================= */
+
+#dashboard {
+    width: 95%;
+    max-width: 1100px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.dashboard-card {
+    padding: 25px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.dashboard-card p {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Responsive Dashboard */
+
+@media (max-width: 900px) {
+
+    #dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    #dashboard {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+
+/* ============================= */
+/* ML Model Comparison Table */
+/* ============================= */
+
+#modelComparisonTable {
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+#modelComparisonTable th,
+#modelComparisonTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+#modelComparisonTable th {
+    font-weight: bold;
+}
+
+#modelComparisonTable tr:hover {
+    background-color: #f5f5f5;
+}

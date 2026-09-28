@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Waste Water Management System</title>
+
+    <link rel="stylesheet" href="../style.css">
+
+</head>
+
+
+<h2>Wastewater Treatment Efficiency Predictor</h2>
+
+<p>
+    Enter wastewater quality parameters below to predict the treatment
+    efficiency using the trained Linear Regression model.
+</p>
+
+<form id="predictionForm">
+
+    <label>pH:</label>
+    <input type="number" id="pH" step="0.1" required>
+
+    <label>Turbidity:</label>
+    <input type="number" id="Turbidity" step="0.1" required>
+
+    <label>Temperature:</label>
+    <input type="number" id="Temperature" step="0.1" required>
+
+    <label>BOD:</label>
+    <input type="number" id="BOD" step="0.1" required>
+
+    <label>COD:</label>
+    <input type="number" id="COD" step="0.1" required>
+
+    <label>TSS:</label>
+    <input type="number" id="TSS" step="0.1" required>
+
+    <label>Dissolved Oxygen:</label>
+    <input type="number" id="Dissolved_Oxygen" step="0.1" required>
+
+    <button type="submit">Predict Treatment Efficiency</button>
+
+</form>
+
+<h3 id="predictionResult"></h3>
+
+<h2>Wastewater Dashboard</h2>
+
+<div id="dashboard">
+
+    <div class="dashboard-card">
+        <h3>Total Predictions</h3>
+        <p id="totalPredictions">Loading...</p>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Average Efficiency</h3>
+        <p id="averageEfficiency">Loading...</p>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Highest Efficiency</h3>
+        <p id="highestEfficiency">Loading...</p>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Lowest Efficiency</h3>
+        <p id="lowestEfficiency">Loading...</p>
+    </div>
+
+</div>
+
+<script>
+
+async function loadDashboard() {
+
+    try {
+
+        const response =
+            await fetch("http://127.0.0.1:5000/dashboard");
+
+        const data = await response.json();
+
+        document.getElementById("totalPredictions").innerText =
+            data.total_predictions;
+
+        document.getElementById("averageEfficiency").innerText =
+            data.average_efficiency + "%";
+
+        document.getElementById("highestEfficiency").innerText =
+            data.highest_efficiency + "%";
+
+        document.getElementById("lowestEfficiency").innerText =
+            data.lowest_efficiency + "%";
+
+    } catch (error) {
+
+        console.error("Error loading dashboard:", error);
+
+    }
+
+}
+
+loadDashboard();
+
+</script>
+
+<h2>Prediction Efficiency Chart</h2>
+
+<p>
+    Visualization of wastewater treatment efficiency
+    for previous predictions.
+</p>
+
+<div id="chartContainer">
+
+    <canvas id="predictionChart"></canvas>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+async function loadPredictionChart() {
+
+    try {
+
+        const response =
+            await fetch("http://127.0.0.1:5000/predictions");
+
+        const predictions = await response.json();
+
+        const labels = predictions.map(function(prediction) {
+            return "Prediction " + prediction.id;
+        });
+
+        const efficiency = predictions.map(function(prediction) {
+            return parseFloat(prediction.treatment_efficiency);
+        });
+
+        const ctx =
+            document.getElementById("predictionChart");
+
+        new Chart(ctx, {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [{
+
+                    label: "Treatment Efficiency (%)",
+
+                    data: efficiency,
+
+                    borderWidth: 2,
+
+                    tension: 0.3
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: false,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Treatment Efficiency (%)"
+
+                        }
+
+                    },
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text: "Prediction"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading prediction chart:",
+            error
+        );
+
+    }
+
+}
+
+loadPredictionChart();
+
+</script>
+
+<h2>Prediction History</h2>
+
+<p>
+    Previous wastewater treatment efficiency predictions
+    stored in the MySQL database.
+</p>
+
+<table id="predictionTable">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>pH</th>
+            <th>Turbidity</th>
+            <th>Temperature</th>
+            <th>BOD</th>
+            <th>COD</th>
+            <th>TSS</th>
+            <th>Dissolved Oxygen</th>
+            <th>Treatment Efficiency</th>
+            <th>Prediction Time</th>
+        </tr>
+    </thead>
+
+    <tbody id="predictionTableBody">
+    </tbody>
+
+</table>
+
+<script>
+
+async function loadPredictionHistory() {
+
+    try {
+
+        const response = await fetch("http://127.0.0.1:5000/predictions");
+
+        const predictions = await response.json();
+
+        const tableBody =
+            document.getElementById("predictionTableBody");
+
+        tableBody.innerHTML = "";
+
+        predictions.forEach(function(prediction) {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${prediction.id}</td>
+                <td>${prediction.ph}</td>
+                <td>${prediction.turbidity}</td>
+                <td>${prediction.temperature}</td>
+                <td>${prediction.bod}</td>
+                <td>${prediction.cod}</td>
+                <td>${prediction.tss}</td>
+                <td>${prediction.dissolved_oxygen}</td>
+                <td>${prediction.treatment_efficiency}%</td>
+                <td>${prediction.prediction_time}</td>
+            `;
+
+            tableBody.appendChild(row);
+
+        });
+
+    } catch (error) {
+
+        console.error("Error loading prediction history:", error);
+
+    }
+
+}
+
+loadPredictionHistory();
+
+</script>
+
+
+<script>
+
+document.getElementById("predictionForm").addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const data = {
+        pH: parseFloat(document.getElementById("pH").value),
+        Turbidity: parseFloat(document.getElementById("Turbidity").value),
+        Temperature: parseFloat(document.getElementById("Temperature").value),
+        BOD: parseFloat(document.getElementById("BOD").value),
+        COD: parseFloat(document.getElementById("COD").value),
+        TSS: parseFloat(document.getElementById("TSS").value),
+        Dissolved_Oxygen: parseFloat(document.getElementById("Dissolved_Oxygen").value)
+    };
+
+    try {
+
+        const response = await fetch("http://127.0.0.1:5000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        document.getElementById("predictionResult").innerText =
+            "Predicted Treatment Efficiency: " +
+            result.predicted_treatment_efficiency +
+            "%";
+
+    } catch (error) {
+
+        document.getElementById("predictionResult").innerText =
+            "Error connecting to the ML model.";
+
+    }
+
+});
+
+</script>
+
+
+<body>
+
+
+    <!-- Navigation -->
+
+    <nav>
+
+        <h2>Amlan Mishra</h2>
+
+        <ul>
+
+            <li>
+                <a href="../index.html">Home</a>
+            </li>
+
+            <li>
+                <a href="../index.html#about">About</a>
+            </li>
+
+            <li>
+                <a href="../index.html#skills">Skills</a>
+            </li>
+
+            <li>
+                <a href="../index.html#projects">Projects</a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- Project Title -->
+
+    <section>
+
+        <h1>Waste Water Management System</h1>
+
+        <p>
+            AI + Data Science + Web Development Project
+        </p>
+
+    </section>
+
+
+    <!-- Project Overview -->
+
+    <section>
+
+        <h2>Project Overview</h2>
+
+        <p>
+            The Waste Water Management System is a data-driven
+            project designed to analyze wastewater-related data
+            and provide useful insights for wastewater management.
+        </p>
+
+        <p>
+            The project combines Data Science, Artificial Intelligence,
+            Machine Learning, databases and Web Development.
+        </p>
+
+    </section>
+
+
+    <!-- Concepts Used -->
+
+    <section>
+
+        <h2>Concepts Used</h2>
+
+        <ul>
+
+            <li>Data Collection</li>
+
+            <li>Data Cleaning</li>
+
+            <li>Exploratory Data Analysis</li>
+
+            <li>Data Visualization</li>
+
+            <li>Machine Learning</li>
+
+            <li>Prediction</li>
+
+            <li>Database Management</li>
+
+            <li>Web Development</li>
+
+        </ul>
+
+    </section>
+
+
+    <!-- Technologies -->
+
+    <section>
+
+        <h2>Technologies Used</h2>
+
+        <ul>
+
+            <li>Python</li>
+
+            <li>Pandas</li>
+
+            <li>NumPy</li>
+
+            <li>Matplotlib</li>
+
+            <li>Scikit-learn</li>
+
+            <li>MySQL</li>
+
+            <li>HTML</li>
+
+            <li>CSS</li>
+
+            <li>GitHub</li>
+
+        </ul>
+
+    </section>
+
+
+    <!-- Project Workflow -->
+
+    <section>
+
+        <h2>Project Workflow</h2>
+
+        <p>
+            Wastewater Dataset
+        </p>
+
+        <p>↓</p>
+
+        <p>
+            Data Cleaning
+        </p>
+
+        <p>↓</p>
+
+        <p>
+            Exploratory Data Analysis
+        </p>
+
+        <p>↓</p>
+
+        <p>
+            Data Visualization
+        </p>
+
+        <p>↓</p>
+
+        <p>
+            Machine Learning Model
+        </p>
+
+        <p>↓</p>
+
+        <p>
+            Prediction and Analysis
+        </p>
+
+        <p>↓</p>
+
+        <p>
+            Web Presentation
+        </p>
+
+    </section>
+
+
+    <!-- Data Science -->
+
+    <section>
+
+        <h2>Data Science</h2>
+
+        <p>
+            Python and Pandas will be used to clean and analyze
+            wastewater data.
+        </p>
+
+        <p>
+            Data visualization will be used to identify trends,
+            relationships and patterns in the dataset.
+        </p>
+
+    </section>
+
+<section>
+    <h3>BOD vs Treatment Efficiency</h3>
+
+<img src="../images/Images.png"
+     alt="BOD vs Treatment Efficiency"
+     width="600">
+</section>
+
+    
+
+    <!-- Artificial Intelligence -->
+
+    <section>
+
+        <h2>Artificial Intelligence / Machine Learning</h2>
+
+        <p>
+            Machine learning techniques will be applied to
+            wastewater-related data to develop a predictive model.
+        </p>
+
+        <p>
+            The model will be evaluated using appropriate
+            performance metrics.
+        </p>
+
+    </section>
+
+
+    <!-- Database -->
+
+    <section>
+
+        <h2>Database</h2>
+
+        <p>
+            MySQL can be used to store wastewater records,
+            measurements and analysis-related information.
+        </p>
+
+    </section>
+
+
+    <!-- Results -->
+
+    <section>
+
+        <h2>Machine Learning Results</h2>
+
+<p>
+    A Linear Regression model was trained to predict wastewater
+    treatment efficiency using water quality parameters.
+</p>
+
+<ul>
+    <li><strong>Model:</strong> Linear Regression</li>
+    <li><strong>Training Samples:</strong> 16</li>
+    <li><strong>Testing Samples:</strong> 4</li>
+    <li><strong>Mean Absolute Error (MAE):</strong> 0.359</li>
+    <li><strong>R² Score:</strong> 0.989</li>
+</ul>
+
+<p>
+    The model achieved an R² score of 0.989 on the test dataset.
+    Since the current dataset contains only 20 synthetic/sample records,
+    these results are intended for project demonstration and learning.
+</p>
+
+    </section>
+
+
+    <!-- ML Model Comparison -->
+
+    <section>
+
+        <h2>ML Model Comparison</h2>
+
+        <p>
+            Three regression models were evaluated using the same
+            wastewater dataset and the same train-test split.
+        </p>
+
+        <table id="modelComparisonTable">
+
+            <thead>
+
+                <tr>
+                    <th>Model</th>
+                    <th>MAE</th>
+                    <th>R² Score</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Linear Regression</td>
+                    <td>0.359</td>
+                    <td>0.989</td>
+                </tr>
+
+                <tr>
+                    <td>Decision Tree Regression</td>
+                    <td>1.525</td>
+                    <td>0.834</td>
+                </tr>
+
+                <tr>
+                    <td>Random Forest Regression</td>
+                    <td>0.905</td>
+                    <td>0.947</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <p>
+            <strong>Evaluation Note:</strong>
+            The results are based on a small dataset containing
+            20 synthetic/sample records and a test set of 4 records.
+            Therefore, these metrics are intended for project
+            demonstration and learning rather than real-world
+            wastewater treatment validation.
+        </p>
+
+    </section>
+
+
+    <!-- GitHub -->
+
+    <section>
+
+        <h2>Project Source Code</h2>
+
+        <p>
+            The complete source code will be available on GitHub.
+        </p>
+
+        <a href="https://github.com/amlanmishra"
+           target="_blank">
+
+            View Project on GitHub
+
+        </a>
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            © 2026 Amlan Mishra
+        </p>
+
+    </footer>
+
+
+</body>
+
+</html>
